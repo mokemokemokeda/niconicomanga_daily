@@ -24,20 +24,18 @@ for i, item in enumerate(soup.select(".mg_category_ranking_inner"), 1):
 
 df = pd.DataFrame(data)
 
-# Excelファイルパス
 file_path = "ranking_results.xlsx"
-
-# 今日の日付文字列
 sheet_name = datetime.datetime.now().strftime("%Y-%m-%d")
 
 try:
-    # 既存ファイルがあれば読み込み
+    # 既存Excelファイルの読み込み
     book = load_workbook(file_path)
-    with pd.ExcelWriter(file_path, engine="openpyxl", mode="a") as writer:
-        writer.book = book
-        # 新しいシートに書き込む
+
+    with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+        writer.book = book  # ここは省略してもOKかもしれません
         df.to_excel(writer, sheet_name=sheet_name, index=False)
+
 except FileNotFoundError:
-    # ファイルがなければ新規作成
-    with pd.ExcelWriter(file_path, engine="openpyxl") as writer:
+    # 新規ファイル作成
+    with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=False)
