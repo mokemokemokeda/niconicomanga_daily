@@ -28,14 +28,11 @@ file_path = "ranking_results.xlsx"
 sheet_name = datetime.datetime.now().strftime("%Y-%m-%d")
 
 try:
-    # 既存Excelファイルの読み込み
-    book = load_workbook(file_path)
-
+    # Excelファイルが存在する場合は追記モードで開く
     with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-        writer.book = book  # ここは省略してもOKかもしれません
+        # 書き込みだけでOK。writer.bookのセットは不要＆禁止
         df.to_excel(writer, sheet_name=sheet_name, index=False)
-
 except FileNotFoundError:
-    # 新規ファイル作成
+    # ファイルがなければ新規作成
     with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name=sheet_name, index=False)
