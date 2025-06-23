@@ -1,0 +1,30 @@
+name: Daily Scrape Ranking
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日0時に実行
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install pandas openpyxl requests beautifulsoup4
+
+      - name: Run scraper script
+        run: python scrape_ranking.py  # 上記のPythonコードが入ったファイル
+
+      - name: Commit & push results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add ranking_results.xlsx
+          git commit -m "Add ranking data for $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
